@@ -33,50 +33,16 @@
 </template>
 
 <script>
-import { request, gql, imageFields, seoMetaTagsFields } from '~/lib/datocms'
+import { request } from '~/lib/datocms'
 import { toHead } from 'vue-datocms'
 import format from 'date-fns/format'
 import parseISO from 'date-fns/parseISO'
+import { POST_BY_SLUG } from '~/queries'
 
 export default {
   async asyncData({ params }) {
     const data = await request({
-      query: gql`
-        query BlogPostQuery($slug: String!) {
-          site: _site {
-            favicon: faviconMetaTags {
-              ...seoMetaTagsFields
-            }
-          }
-
-          post(filter: { slug: { eq: $slug } }) {
-            seo: _seoMetaTags {
-              ...seoMetaTagsFields
-            }
-            id
-            title
-            slug
-            publicationDate: _firstPublishedAt
-            content
-            coverImage {
-              responsiveImage(imgixParams: { fit: crop, ar: "16:9", w: 860 }) {
-                ...imageFields
-              }
-            }
-            author {
-              name
-              picture {
-                responsiveImage(imgixParams: { fit: crop, ar: "1:1", w: 40 }) {
-                  ...imageFields
-                }
-              }
-            }
-          }
-        }
-
-        ${imageFields}
-        ${seoMetaTagsFields}
-      `,
+      query: POST_BY_SLUG,
       variables: {
         slug: params.id
       }
